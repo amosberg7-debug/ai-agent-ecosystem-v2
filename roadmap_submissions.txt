@@ -1,0 +1,27 @@
+Email: amosberg7@icloud.com | Business: Advanced Health  | Industry: healthcare\nRoadmap:\n# AI Automation Roadmap: Advanced Health
+
+## 1. TOP PRIORITY TOOL
+**Zapier + a unified inbox (Front or Missive)** — tackles email overload first, since it's your #1 drain with a small team.
+
+## 2. IMPLEMENTATION STEPS
+- Connect your practice email + payment system (Stripe/Square) into Front for shared, tagged inboxes
+- Build Zapier flows: new patient email → auto-categorize → route to right staff member
+- Automate payment plan reminders: Zapier + Stripe → auto-send reminder emails/texts on due dates
+- Set up a single "app dashboard" (use Zapier or **Make**) to sync patient records across your existing software instead of manual re-entry
+
+## 3. HOURS SAVED PER WEEK
+**8–12 hours/week** across your 2-5 person team (mostly reclaimed from email triage and manual payment follow-ups)
+
+## 4. MONTHLY COST
+- Zapier (Team plan): ~$69/mo
+- Front (Starter, 2-5 seats): ~$95–150/mo
+- **Total: ~$165–220/mo**
+
+## 5. 30-DAY ACTION PLAN
+**Week 1:** Audit all email types (billing, scheduling, patient Qs) — identify top 3 repetitive ones
+**Week 2:** Set up Front + connect Zapier; automate email sorting/routing
+**Week 3:** Build payment plan reminder automation (Stripe/Square → Zapier → SMS/email)
+**Week 4:** Test software sync automation (Make) between EHR and billing tool; train staff on new workflow
+
+## 6. QUICK WIN (1 Hour)
+Set up a **Zapier automation**: When a payment fails or is overdue in Stripe → auto-send a friendly reminder email + Slack notification to staff. Takes 45 minutes, saves 2+ hours/week immediately.\n--------------------------------------------------\n
