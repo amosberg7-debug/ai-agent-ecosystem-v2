@@ -34,3 +34,4 @@ memory/brain_budgets.json
 # Skills (auto-generated)
 skills/*.py
 !skills/.gitkeep
+.env
