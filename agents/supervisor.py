@@ -1,4 +1,5 @@
 """The main agent with HITL, memory, learning, and dynamic brain routing."""
+from telegram_hitl import send_approval_request, check_telegram_response, send_status_update
 import os
 import json
 import time
@@ -257,9 +258,33 @@ Respond in JSON format:
             print("✅ Auto-approved (HITL disabled or green action)")
             decision = "approve"
         else:
-            decision = input("Your decision [approve/amend/skip/abort]: ").strip().lower()
-            if decision not in ["approve", "amend", "skip", "abort"]:
-                decision = "approve"
+            # Try Telegram HITL first
+            telegram_sent = send_approval_request(
+                step_num=state.get("step", 0),
+                total_steps=state.get("total_steps", 1),
+                action=tool,
+                params=params,
+                rationale=rationale,
+                risk_level=risk
+            )
+            if telegram_sent:
+                telegram_decision = check_telegram_response(timeout_seconds=600)
+                if telegram_decision == "approve":
+                    decision = "approve"
+                    print("📱 Approved via Telegram")
+                elif telegram_decision == "reject":
+                    decision = "abort"
+                    print("📱 Rejected via Telegram")
+                else:
+                    # No Telegram response, fall back to terminal
+                    decision = input("No phone response. Your decision [approve/amend/skip/abort]: ").strip().lower()
+                    if decision not in ["approve", "amend", "skip", "abort"]:
+                        decision = "approve"
+            else:
+                # Telegram not configured, use terminal
+                decision = input("Your decision [approve/amend/skip/abort]: ").strip().lower()
+                if decision not in ["approve", "amend", "skip", "abort"]:
+                    decision = "approve"
 
         self.memory.log_audit(
             agent_name=Config.AGENT_NAME,
