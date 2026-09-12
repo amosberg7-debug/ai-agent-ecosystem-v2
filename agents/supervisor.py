@@ -260,11 +260,11 @@ Respond in JSON format:
         else:
             # Try Telegram HITL first
             telegram_sent = send_approval_request(
-                step_num=state.get("step", 0),
-                total_steps=state.get("total_steps", 1),
+                step_num=state["current_step"] + 1,
+                total_steps=len(state["plan"]),
                 action=tool,
-                params=params,
-                rationale=rationale,
+                params=json.dumps(action.get("params", {})),
+                rationale=action.get("rationale", "N/A"),
                 risk_level=risk
             )
             if telegram_sent:
