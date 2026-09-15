@@ -1,16 +1,24 @@
 import os
+from dotenv import load_dotenv; load_dotenv()
 import requests
 import time
-from threading import Thread
 
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+def _get_token():
+    """Read Telegram bot token at runtime (after .env is loaded)."""
+    return os.getenv("TELEGRAM_BOT_TOKEN", "")
+
+def _get_chat_id():
+    """Read Telegram chat ID at runtime (after .env is loaded)."""
+    return os.getenv("TELEGRAM_CHAT_ID", "")
 
 def send_approval_request(step_num, total_steps, action, params, rationale, risk_level):
     """Send approval request to Telegram and wait for response."""
-    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+    token = _get_token()
+    chat_id = _get_chat_id()
+    
+    if not token or not chat_id:
         print("⚠️  Telegram not configured. Falling back to terminal approval.")
-        return None  # Signal to use terminal
+        return None
     
     message = f"""🤖 *AGENT NEEDS APPROVAL*
 
@@ -30,9 +38,9 @@ Reply with:
 ⏱️ You have 10 minutes to respond.
 """
     
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
     payload = {
-        "chat_id": TELEGRAM_CHAT_ID,
+        "chat_id": chat_id,
         "text": message,
         "parse_mode": "Markdown"
     }
@@ -51,10 +59,13 @@ Reply with:
 
 def check_telegram_response(timeout_seconds=600):
     """Poll Telegram for user response. Returns 'approve', 'reject', or None."""
-    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+    token = _get_token()
+    chat_id = _get_chat_id()
+    
+    if not token or not chat_id:
         return None
     
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/getUpdates"
+    url = f"https://api.telegram.org/bot{token}/getUpdates"
     start_time = time.time()
     last_update_id = None
     
@@ -69,10 +80,9 @@ def check_telegram_response(timeout_seconds=600):
                     last_update_id = update["update_id"]
                     message = update.get("message", {})
                     text = message.get("text", "").lower().strip()
-                    chat_id = message.get("chat", {}).get("id")
+                    msg_chat_id = message.get("chat", {}).get("id")
                     
-                    # Only respond to messages from our chat
-                    if str(chat_id) == str(TELEGRAM_CHAT_ID):
+                    if str(msg_chat_id) == str(chat_id):
                         if text in ["approve", "yes", "y", "✅", "go", "ok"]:
                             send_confirmation("✅ Step APPROVED. Agent is proceeding...")
                             return "approve"
@@ -90,12 +100,15 @@ def check_telegram_response(timeout_seconds=600):
 
 def send_confirmation(message_text):
     """Send a confirmation message back to Telegram."""
-    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+    token = _get_token()
+    chat_id = _get_chat_id()
+    
+    if not token or not chat_id:
         return
     
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
     payload = {
-        "chat_id": TELEGRAM_CHAT_ID,
+        "chat_id": chat_id,
         "text": message_text,
         "parse_mode": "Markdown"
     }
@@ -106,12 +119,15 @@ def send_confirmation(message_text):
 
 def send_status_update(message_text):
     """Send general status updates to Telegram."""
-    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+    token = _get_token()
+    chat_id = _get_chat_id()
+    
+    if not token or not chat_id:
         return
     
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
     payload = {
-        "chat_id": TELEGRAM_CHAT_ID,
+        "chat_id": chat_id,
         "text": message_text,
         "parse_mode": "Markdown"
     }
